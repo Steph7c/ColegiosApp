@@ -16,6 +16,9 @@ namespace ColegioDomain.Services
         Task<IEnumerable<Usuario>> ObtenerUsuariosActivos();
         Task<IEnumerable<Usuario>> ObtenerUsuariosPorNombre(string nombre);
         Task<IEnumerable<Usuario>> ObtenerUsuariosPorRol(string rol);
+        //Adicionales
+        Task<IEnumerable<Usuario>> ObtenerUsuariosInactivos();
+        Task<Usuario> ObtenerUsuarioPorId(string id);
 
     }
 }

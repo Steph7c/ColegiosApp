@@ -35,5 +35,14 @@ namespace ColegioInfrastructure.Services
 
         public async Task<IEnumerable<Usuario>> ObtenerUsuariosPorRol(string rol) => await _repositorio.ObtenerUsuariosPorRol(rol);
 
+        //Adicionales
+        public async Task<IEnumerable<Usuario>> ObtenerUsuariosInactivos() => await _repositorio.ObtenerUsuariosInactivos();
+        public async Task<Usuario>ObtenerUsuarioPorId(string id)
+        {
+            return await _repositorio.ObtenerUsuarioPorId(Guid.Parse(id));
+        } 
+
+
+
     }
 }

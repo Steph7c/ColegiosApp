@@ -66,5 +66,18 @@ namespace ColegioInfrastructure.Repositories
         {
             return await _context.Usuarios.Where(u => u.Rol  == rol).ToListAsync();
         }
+
+        //Adicionales
+        public async Task<IEnumerable<Usuario>> ObtenerUsuariosInactivos()
+        {
+            return await _context.Usuarios.Where(u => !u.Estado).ToListAsync();
+        }
+
+        public async Task<Usuario>ObtenerUsuarioPorId(Guid id)
+        {
+
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection.Metadata.Ecma335;
@@ -79,7 +80,7 @@ namespace ColegioAPI.Controllers
             }
             catch (Exception e)
             {
-                throw e;
+                return BadRequest(e.Message);
             }
         }
 
@@ -183,7 +184,41 @@ namespace ColegioAPI.Controllers
             }
         }
 
+        //Endpoint adicional
+        [HttpGet("ConsultarInactivos")]
 
+        public async Task<IActionResult> ConsultarInactivos()
+        {
+            try
+            {
+                var usuarios = await _usuarioService.ObtenerUsuariosInactivos();
+                return Ok(usuarios);
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+        }
+
+        //Endpoint adicional
+        [HttpGet("ConsultarPorId/{id}")]
+
+        public async Task<IActionResult> ConsultarPorId(string id)
+        {
+            try
+            {
+                var usuario = await _usuarioService.ObtenerUsuarioPorId(id);
+                if (usuario == null)
+                    return NotFound();
+                return Ok(_mapper.Map<Usuario, UsuarioModel>(usuario));
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+        }
 
         private AutenticacionModel BuildToken(CredencialesModel credecialesUsuario, string rol)
         {
