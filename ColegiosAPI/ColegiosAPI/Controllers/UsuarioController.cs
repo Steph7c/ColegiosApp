@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ColegioAPI.Models;
-using ColegioDomain.Entidades;
+using ColegioDomain.DTO;
 using ColegioDomain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -89,10 +89,10 @@ namespace ColegioAPI.Controllers
         {
             try
             {
-                var usuarioEntity = _mapper.Map<UsuarioModel, Usuario>(usuario);
+                var usuarioEntity = _mapper.Map<UsuarioModel, UsuarioDTO>(usuario);
                 var result = await _usuarioService.CrearUsuario(usuarioEntity);
 
-                return Ok(_mapper.Map<Usuario, UsuarioModel>(result));
+                return Ok(_mapper.Map<UsuarioDTO, UsuarioModel>(result));
             }
             catch (Exception e)
             {
@@ -107,10 +107,10 @@ namespace ColegioAPI.Controllers
         {
             try
             {
-                var usuarioEntity = _mapper.Map<UsuarioModel, Usuario>(usuario);
+                var usuarioEntity = _mapper.Map<UsuarioModel, UsuarioDTO>(usuario);
                 var usuarioModificado = await _usuarioService.ActualizarUsuario(usuarioEntity);
 
-                return Ok(_mapper.Map<Usuario, UsuarioModel>(usuarioModificado));
+                return Ok(_mapper.Map<UsuarioDTO, UsuarioModel>(usuarioModificado));
             }
             catch (Exception e)
             {
@@ -211,7 +211,7 @@ namespace ColegioAPI.Controllers
                 var usuario = await _usuarioService.ObtenerUsuarioPorId(id);
                 if (usuario == null)
                     return NotFound();
-                return Ok(_mapper.Map<Usuario, UsuarioModel>(usuario));
+                return Ok(_mapper.Map<UsuarioDTO, UsuarioModel>(usuario));
             }
             catch (Exception e)
             {

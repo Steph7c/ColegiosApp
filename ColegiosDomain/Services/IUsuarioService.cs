@@ -1,4 +1,4 @@
-﻿using ColegioDomain.Entidades;
+﻿using ColegioDomain.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +9,16 @@ namespace ColegioDomain.Services
 {
     public interface IUsuarioService
     {
-        Task<Usuario> CrearUsuario(Usuario usuario);
-        Task<Usuario> ActualizarUsuario(Usuario usuario);
+        Task<UsuarioDTO> CrearUsuario(UsuarioDTO usuario);
+        Task<UsuarioDTO> ActualizarUsuario(UsuarioDTO usuario);
         Task<bool> EliminarUsuario(Guid id);
-        Task<IEnumerable<Usuario>> ObtenerUsuarios();
-        Task<IEnumerable<Usuario>> ObtenerUsuariosActivos();
-        Task<IEnumerable<Usuario>> ObtenerUsuariosPorNombre(string nombre);
-        Task<IEnumerable<Usuario>> ObtenerUsuariosPorRol(string rol);
+        Task<IEnumerable<UsuarioDTO>> ObtenerUsuarios();
+        Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosActivos();
+        Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosPorNombre(string nombre);
+        Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosPorRol(string rol);
         //Adicionales
-        Task<IEnumerable<Usuario>> ObtenerUsuariosInactivos();
-        Task<Usuario> ObtenerUsuarioPorId(string id);
+        Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosInactivos();
+        Task<UsuarioDTO> ObtenerUsuarioPorId(string id);
 
     }
 }

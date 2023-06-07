@@ -1,5 +1,5 @@
 ﻿
-using ColegioDomain.Entidades;
+using ColegioDomain.DTO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,7 +13,7 @@ namespace ColegioData.Context
     public class ColegioDbContext : IdentityDbContext
 
     {
-        public DbSet<Usuario>Usuarios { get; set; }
+        public DbSet<UsuarioDTO> Usuarios { get; set; }
 
         public ColegioDbContext(DbContextOptions options): base(options)
         {
