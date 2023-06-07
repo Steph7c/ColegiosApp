@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ColegioAPI.Models;
-using ColegioDomain.Entidades;
+using ColegioDomain.DTO;
 
 namespace ColegioAPI.Utilidades
 {
@@ -8,11 +8,11 @@ namespace ColegioAPI.Utilidades
     {
         public AutoMapperProfiles()
         {
-            CreateMap<UsuarioModel, Usuario>()
+            CreateMap<UsuarioModel, UsuarioDTO>()
                 .ForMember(u => u.Id,
                 opt => opt.MapFrom(src => Guid.Parse(src.Id)));
 
-            CreateMap<Usuario, UsuarioModel>()
+            CreateMap<UsuarioDTO, UsuarioModel>()
                 .ForMember(u => u.Id,
                 opt => opt.MapFrom(src => src.Id.ToString()));
         }

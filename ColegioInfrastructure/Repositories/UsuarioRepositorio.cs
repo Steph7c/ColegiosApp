@@ -1,82 +1,148 @@
 ﻿using ColegioData.Context;
-using ColegioDomain.Entidades;
+using ColegioDomain.DTO;
 using ColegioDomain.Repositories;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ColegioInfrastructure.Repositories
 {
     public class UsuarioRepositorio : IUsuarioRepositorio
     {
-        private readonly ColegioDbContext _context;
-        public UsuarioRepositorio(ColegioDbContext context)
+        //private readonly ColegioDbContext _context;
+        private readonly DapperContext _dapperContext;
+        public UsuarioRepositorio(DapperContext dapperContext)
         {
-            _context = context;
+            _dapperContext = dapperContext;
         }
-        public async Task<Usuario> ActualizarUsuario(Usuario usuario)
+        public async Task<UsuarioDTO> ActualizarUsuario(UsuarioDTO usuario)
         {
-            _context.Usuarios.Update(usuario);
-            await _context.SaveChangesAsync();
-            return usuario;
+            using (var connetion = _dapperContext.createConnection())
+            {
+                var parametros = new DynamicParameters();
+                usuario.Id = Guid.NewGuid();
+                parametros.Add("@Id", usuario.Id);
+                parametros.Add("@Nombres", usuario.Nombres);
+                parametros.Add("@Apellidos", usuario.Apellidos);
+                parametros.Add("@FechaNacimiento", usuario.FechaNacimiento);
+                parametros.Add("@Celular", usuario.Celular);
+                parametros.Add("@Rol", usuario.Rol);
+                parametros.Add("@FechaIngreso", usuario.FechaIngreso);
+                parametros.Add("@Estado", usuario.Estado);
+                await connetion.ExecuteAsync("ActualizarUsuario", parametros, commandType: CommandType.StoredProcedure);
+                    return usuario;
+            }
+
         }
 
-        public async Task<Usuario> CrearUsuario(Usuario usuario)
+        public async Task<UsuarioDTO> CrearUsuario(UsuarioDTO usuario)
         {
-            await _context.Usuarios.AddAsync(usuario);
-            await _context.SaveChangesAsync();
-            return usuario;
+            using (var connetion = _dapperContext.createConnection())
+            {
+                var parametros = new DynamicParameters();
+                usuario.Id = Guid.NewGuid();
+                parametros.Add("@Id", usuario.Id);
+                parametros.Add("@Nombres", usuario.Nombres);
+                parametros.Add("@Apellidos", usuario.Apellidos);
+                parametros.Add("@FechaNacimiento", usuario.FechaNacimiento);
+                parametros.Add("@Celular", usuario.Celular);
+                parametros.Add("@Rol", usuario.Rol);
+                parametros.Add("@FechaIngreso", usuario.FechaIngreso);
+                parametros.Add("@Estado", usuario.Estado);
+                await connetion.ExecuteAsync("CrearUsuario", parametros, commandType: CommandType.StoredProcedure);
+                return usuario;
+            }
         }
 
         public async Task<bool> EliminarUsuario(Guid id)
         {
-             var Usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
-            
-            if (Usuario == null) 
+            using (var connection = _dapperContext.createConnection())
             {
-                return false; 
+                var parametros = new DynamicParameters();
+                parametros.Add("@Id", id);
+
+                await connection.ExecuteAsync("EliminarUsuarioPorId", parametros, commandType: CommandType.StoredProcedure);
+                return true;
             }
             
-            else 
-            { 
-                _context.Usuarios.Remove(Usuario);
-                return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<IEnumerable<UsuarioDTO>> ObtenerUsuarios()
+        {
+            using (var connection = _dapperContext.createConnection())
+            {
+                var usuarios = await connection.QueryAsync<UsuarioDTO>(
+                    sql: "ObtenerUsuarios",
+                    commandType: CommandType.StoredProcedure);
+                return usuarios.ToList();
             }
         }
 
-        public async Task<IEnumerable<Usuario>> ObtenerUsuarios()
+        public async Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosActivos()
         {
-            return await _context.Usuarios.ToListAsync();
+            using (var connection = _dapperContext.createConnection())
+            {
+                var usuarios = await connection.QueryAsync<UsuarioDTO>(
+                    sql: "ObtenerUsuariosActivos",
+                    commandType: CommandType.StoredProcedure);
+                return usuarios.ToList();
+            }
         }
-
-        public async Task<IEnumerable<Usuario>> ObtenerUsuariosActivos()
+        
+        public async Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosPorNombre(string nombre)
         {
-            return await _context.Usuarios.Where(u => u.Estado == true).ToListAsync();
-        }
+            using (var connection = _dapperContext.createConnection())
+            {
+                var parametros = new DynamicParameters();
+                parametros.Add("@Nombre", nombre);
+                var usuarios = await connection.QueryAsync<UsuarioDTO>("ObtenerUsuariosPorNombre", parametros,
+                    commandType: CommandType.StoredProcedure);
+                return usuarios.ToList();
+            }
 
-        public async Task<IEnumerable<Usuario>> ObtenerUsuariosPorNombre(string nombre)
+        }
+        
+        public async Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosPorRol(string rol)
         {
-            return await _context.Usuarios.Where(u => u.Nombres == nombre).ToListAsync();
-        }
+            using (var connection = _dapperContext.createConnection())
+            {
+                var parametros = new DynamicParameters();
+                parametros.Add("@Rol", rol);
+                var usuarios = await connection.QueryAsync<UsuarioDTO>("ObtenerUsuariosPorRol", parametros, 
+                commandType: CommandType.StoredProcedure);
+                return usuarios.ToList();
+            }
 
-        public async Task<IEnumerable<Usuario>> ObtenerUsuariosPorRol(string rol)
-        {
-            return await _context.Usuarios.Where(u => u.Rol  == rol).ToListAsync();
         }
-
         //Adicionales
-        public async Task<IEnumerable<Usuario>> ObtenerUsuariosInactivos()
+        public async Task<IEnumerable<UsuarioDTO>> ObtenerUsuariosInactivos()
         {
-            return await _context.Usuarios.Where(u => !u.Estado).ToListAsync();
+            using (var connection = _dapperContext.createConnection())
+            {
+                var usuarios = await connection.QueryAsync<UsuarioDTO>(
+                    sql: "ObtenerUsuariosInactivos",
+                    commandType: CommandType.StoredProcedure);
+                return usuarios.ToList();
+            }
+
         }
 
-        public async Task<Usuario>ObtenerUsuarioPorId(Guid id)
+        public async Task<UsuarioDTO> ObtenerUsuarioPorId(Guid id)
         {
-
-            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+            using (var connection = _dapperContext.createConnection())
+            {
+                var parametros = new DynamicParameters();
+                parametros.Add("@Id", id);
+                var usuario = await connection.QueryFirstAsync<UsuarioDTO>("ObtenerUsuarioPorId", parametros,
+                commandType: CommandType.StoredProcedure);
+                return usuario;
+            }
         }
 
     }

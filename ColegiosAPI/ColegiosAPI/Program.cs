@@ -12,9 +12,10 @@ using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<DapperContext>();
 builder.Services.AddDbContext<ColegioDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbContext"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DapperContext"));
 });
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
